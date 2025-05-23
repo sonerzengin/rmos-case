@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { authService } from '@/services/authService'
+import router from 'next/router'
 
 // Axios instance
 export const api = axios.create({
@@ -32,6 +33,7 @@ api.interceptors.response.use(
       // Token geçersizse cookie'yi temizle
       authService.removeToken()
       // Login sayfasına yönlendir (gerekirse)
+      router.push('/')
       if (typeof window !== 'undefined') {
         window.location.reload()
       }

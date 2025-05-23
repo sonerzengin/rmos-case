@@ -1,17 +1,26 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
+import dynamic from 'next/dynamic'
 import { useAuthStore } from "@/lib/store"
-import { LoginForm } from "@/components/login-form"
-import { Dashboard } from "@/components/dashboard"
+import { useRouter } from "next/navigation"
+
+// Hydration hatası verdiği için dynamic import kullanıyoruz
+const LoginForm = dynamic(() => import("@/components/login-form").then(mod => ({ default: mod.LoginForm })), { ssr: false })
 
 export default function Home() {
-  // Sadece isAuthenticated durumunu alıyoruz
+  const router = useRouter()
   const isAuthenticated = useAuthStore(state => state.isAuthenticated)
+  
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard")
+    }
+  }, [isAuthenticated, router])
 
   return (
     <main>
-      {isAuthenticated ? <Dashboard /> : <LoginForm />}
+      <LoginForm />
     </main>
   )
 }

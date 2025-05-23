@@ -1,11 +1,10 @@
 "use client"
 
-import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Card,
   CardContent,
@@ -23,11 +22,11 @@ import {
 } from "@/components/ui/form"
 import { loginSchema, type LoginFormValues } from "@/lib/schemas"
 import { useAuthStore } from "@/lib/store"
+import { useToast } from "@/hooks/use-toast"
 
 export function LoginForm() {
-  const [error, setError] = useState<string | null>(null)
+  const { toast } = useToast()
   const login = useAuthStore(state => state.login)
-  const isLoading = useAuthStore(state => state.isLoading)
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -37,17 +36,28 @@ export function LoginForm() {
     },
   })
 
-  const onSubmit = async (values: LoginFormValues) => {
-    setError(null)
-
-    try {
-      const success = await login(values)
+  const loginMutation = useMutation({
+    mutationFn: (values: LoginFormValues) => login(values),
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Hata",
+        description: "Giriş yapılırken bir hata oluştu."
+      })
+    },
+    onSuccess: (success) => {
       if (!success) {
-        setError("Kullanıcı adı veya şifre hatalı!")
+        toast({
+          variant: "destructive", 
+          title: "Giriş başarısız",
+          description: "Kullanıcı adı veya şifre hatalı!"
+        })
       }
-    } catch (err) {
-      setError("Giriş yapılırken bir hata oluştu.")
     }
+  })
+
+  const onSubmit = async (values: LoginFormValues) => {
+    loginMutation.mutate(values)
   }
 
   return (
@@ -74,7 +84,7 @@ export function LoginForm() {
                       <Input 
                         placeholder="Kullanıcı adınızı girin" 
                         {...field} 
-                        disabled={isLoading}
+                        disabled={loginMutation.isPending}
                       />
                     </FormControl>
                     <FormMessage />
@@ -92,24 +102,19 @@ export function LoginForm() {
                         type="password" 
                         placeholder="Şifrenizi girin" 
                         {...field} 
-                        disabled={isLoading}
+                        disabled={loginMutation.isPending}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              {error && (
-                <div className="text-sm text-red-600 text-center">
-                  {error}
-                </div>
-              )}
               <Button 
                 type="submit" 
                 className="w-full" 
-                disabled={isLoading}
+                disabled={loginMutation.isPending}
               >
-                {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
+                {loginMutation.isPending ? "Giriş yapılıyor..." : "Giriş Yap"}
               </Button>
             </form>
           </Form>
