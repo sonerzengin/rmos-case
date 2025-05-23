@@ -1,101 +1,131 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { FileText, Download, Eye, Trash } from "lucide-react"
+import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FileText, Calendar, UserPlus, FilePlus } from "lucide-react";
+import { invoicesService, InvoicesRequest } from "@/services/invoices";
+import { FaturaTablosu } from "@/components/faturalar/fatura-tablosu";
+import { FaturaIstatistikleri } from "@/components/faturalar/fatura-istatistikleri";
 
 export default function FaturalarPage() {
-  // Örnek fatura verileri
-  const faturalar = [
-    { id: 1, no: "F-2023-001", tarih: "01.01.2023", musteri: "ABC Ltd.", tutar: "1.250,00 ₺", durum: "Ödendi" },
-    { id: 2, no: "F-2023-002", tarih: "15.01.2023", musteri: "XYZ A.Ş.", tutar: "3.750,50 ₺", durum: "Bekliyor" },
-    { id: 3, no: "F-2023-003", tarih: "22.01.2023", musteri: "123 Holding", tutar: "5.430,75 ₺", durum: "Ödendi" },
-    { id: 4, no: "F-2023-004", tarih: "05.02.2023", musteri: "Örnek Ltd.", tutar: "980,25 ₺", durum: "İptal Edildi" },
-    { id: 5, no: "F-2023-005", tarih: "18.02.2023", musteri: "Test A.Ş.", tutar: "2.340,00 ₺", durum: "Bekliyor" },
-  ]
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [shouldFetch, setShouldFetch] = useState(false);
+
+  // Sayfa yüklendiğinde varsayılan tarihleri ayarla
+  useEffect(() => {
+    // 1 Haziran 2024 - 30 Haziran 2024 arası default olarak ayarlandı
+    setStartDate("2024-06-01");
+    setEndDate("2024-06-30");
+    setShouldFetch(true);
+  }, []);
+
+  // Tanstack Query ile veri çekme
+  const {
+    data: invoices = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["invoices", startDate, endDate],
+    queryFn: () =>
+      invoicesService.getInvoices({
+        xBas_Tar: startDate,
+        xBit_Tar: endDate,
+      } as InvoicesRequest),
+    enabled: shouldFetch && !!startDate && !!endDate,
+  });
+
+  const handleSearch = () => {
+    if (startDate && endDate) {
+      setShouldFetch(true);
+      refetch();
+    }
+  };
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <FileText className="h-6 w-6" />
+      <div className="flex justify-between items-center bg-slate-100 p-4 rounded-md">
+        <div className="flex items-center gap-4">
+          <FileText className="h-10 w-10" />
           <h1 className="text-3xl font-bold text-gray-900">Faturalar</h1>
         </div>
-        <Button>
-          Yeni Fatura Oluştur
+        <Button onClick={() => {}}>
+          <FilePlus className="mr-2 h-4 w-4" />
+          Yeni Fatura Ekle
         </Button>
       </div>
 
+      {/* Tarih Kontrolleri */}
       <Card>
         <CardHeader>
-          <CardTitle>Fatura Listesi</CardTitle>
-          <CardDescription>
-            Tüm faturalarınızı bu sayfadan yönetebilirsiniz.
-          </CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Filtreleme
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Fatura No</TableHead>
-                <TableHead>Tarih</TableHead>
-                <TableHead>Müşteri</TableHead>
-                <TableHead>Tutar</TableHead>
-                <TableHead>Durum</TableHead>
-                <TableHead className="text-right">İşlemler</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {faturalar.map((fatura) => (
-                <TableRow key={fatura.id}>
-                  <TableCell className="font-medium">{fatura.no}</TableCell>
-                  <TableCell>{fatura.tarih}</TableCell>
-                  <TableCell>{fatura.musteri}</TableCell>
-                  <TableCell>{fatura.tutar}</TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      fatura.durum === "Ödendi" 
-                        ? "bg-green-100 text-green-800" 
-                        : fatura.durum === "Bekliyor" 
-                        ? "bg-yellow-100 text-yellow-800" 
-                        : "bg-red-100 text-red-800"
-                    }`}>
-                      {fatura.durum}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button size="icon" variant="ghost">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button size="icon" variant="ghost">
-                        <Download className="h-4 w-4" />
-                      </Button>
-                      <Button size="icon" variant="ghost">
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="flex flex-col sm:flex-row gap-4 items-end">
+            <div className="flex-1">
+              <Label htmlFor="startDate">Başlangıç Tarihi</Label>
+              <Input
+                id="startDate"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+            <div className="flex-1">
+              <Label htmlFor="endDate">Bitiş Tarihi</Label>
+              <Input
+                id="endDate"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </div>
+            <Button
+              onClick={handleSearch}
+              disabled={isLoading || !startDate || !endDate}
+            >
+              {isLoading ? "Yükleniyor..." : "Ara"}
+            </Button>
+          </div>
         </CardContent>
       </Card>
+
+      {/* Hata Durumu */}
+      {isError && (
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center text-destructive">
+              Veriler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar
+              deneyin.
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Sekmeler */}
+      <Tabs defaultValue="table" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="table">Fatura Tablosu</TabsTrigger>
+          <TabsTrigger value="statistics">İstatistikler</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="table" className="space-y-4">
+          <FaturaTablosu invoices={invoices} loading={isLoading} />
+        </TabsContent>
+
+        <TabsContent value="statistics" className="space-y-4">
+          <FaturaIstatistikleri invoices={invoices} loading={isLoading} />
+        </TabsContent>
+      </Tabs>
     </div>
-  )
-} 
+  );
+}

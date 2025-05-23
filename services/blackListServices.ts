@@ -26,6 +26,20 @@ export interface BlackListResponse {
   value: BlackListItem[]
 }
 
+export interface AddBlackListRequest {
+  db_Id: number
+  Adi: string
+  Soy: string
+  Aciklama: string
+}
+
+export interface AddBlackListResponse {
+  isSucceded: boolean
+  message: string | null
+  messageList: string[]
+  value: string
+}
+
 export const blackListService = {
   async getBlackList(): Promise<BlackListItem[]> {
     try {
@@ -45,6 +59,27 @@ export const blackListService = {
       console.error('Kara liste verileri çekilirken hata:', error)
       toastService.error('Kara liste verileri alınamadı. Lütfen daha sonra tekrar deneyin.')
       return []
+    }
+  },
+
+  async addBlackListItem(data: Omit<AddBlackListRequest, 'db_Id'>): Promise<boolean> {
+    try {
+      const response = await api.post<AddBlackListResponse>('/Kara/Ekle', {
+        db_Id: 9,
+        ...data
+      })
+      
+      if (response.data.isSucceded) {
+        toastService.success('Kara liste kaydı başarıyla eklendi.')
+        return true
+      } else {
+        toastService.error(response.data.message || 'Kara liste kaydı eklenirken bir hata oluştu.')
+        return false
+      }
+    } catch (error) {
+      console.error('Kara liste kaydı eklenirken hata:', error)
+      toastService.error('Kara liste kaydı eklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.')
+      return false
     }
   }
 } 

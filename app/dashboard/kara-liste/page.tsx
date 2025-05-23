@@ -42,6 +42,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { KaraListeDetayModal } from "@/components/kara-liste/kara-liste-detay-modal";
+import { AddNewBlack } from "@/components/kara-liste/AddNewBlack";
+import { toastService } from "@/services/toastService";
 
 export default function KaraListePage() {
   const { toast } = useToast();
@@ -50,6 +52,7 @@ export default function KaraListePage() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedKisi, setSelectedKisi] = useState<BlackListItem | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const {
     data: karaListe = [],
@@ -86,13 +89,9 @@ export default function KaraListePage() {
   // Hata durumunda toast göster
   useEffect(() => {
     if (isError) {
-      toast({
-        variant: "destructive",
-        title: "Hata",
-        description: "Kara liste verileri yüklenirken bir hata oluştu.",
-      });
+      toastService.error("Kara liste verileri yüklenirken bir hata oluştu."); 
     }
-  }, [isError, toast]);
+  }, [isError]);
 
   // Sayfa değiştirme fonksiyonları
   const goToNextPage = () => {
@@ -115,12 +114,12 @@ export default function KaraListePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <UserX className="h-6 w-6" />
+      <div className="flex justify-between items-center bg-slate-100 p-4 rounded-md">
+        <div className="flex items-center gap-4">
+          <UserX className="h-10 w-10" />
           <h1 className="text-3xl font-bold text-gray-900">Kara Liste</h1>
         </div>
-        <Button>
+        <Button onClick={() => setIsAddModalOpen(true)}>
           <UserPlus className="mr-2 h-4 w-4" />
           Yeni Kayıt Ekle
         </Button>
@@ -284,6 +283,12 @@ export default function KaraListePage() {
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
         kisiDetay={selectedKisi}
+      />
+
+      {/* Yeni Kayıt Ekleme Modalı */}
+      <AddNewBlack
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
       />
     </div>
   );

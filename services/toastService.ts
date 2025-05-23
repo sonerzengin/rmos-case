@@ -1,6 +1,6 @@
 import { toast } from "@/hooks/use-toast"
 
-type ToastVariant = "default" | "destructive"
+type ToastVariant = "default" | "destructive" | "success" | "warning"
 type ToastType = "success" | "error" | "warning" | "info"
 
 interface ToastOptions {
@@ -11,7 +11,7 @@ interface ToastOptions {
 }
 
 class ToastService {
-  showToast({ title, description, variant = "default", duration = 5000 }: ToastOptions) {
+  showToast({ title, description, variant = "default", duration = 2000 }: ToastOptions) {
     return toast({
       title,
       description,
@@ -24,7 +24,7 @@ class ToastService {
     return this.showToast({
       title,
       description: message,
-      variant: "default",
+      variant: "success",
     })
   }
 
@@ -40,7 +40,7 @@ class ToastService {
     return this.showToast({
       title,
       description: message,
-      variant: "default",
+      variant: "warning",
     })
   }
 

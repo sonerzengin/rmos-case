@@ -1,22 +1,26 @@
-"use client"
+"use client";
 
-import { BlackListItem } from "@/services/blackListServices"
+import { BlackListItem } from "@/services/blackListServices";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
 interface KaraListeDetayModalProps {
-  isOpen: boolean
-  onClose: () => void
-  kisiDetay: BlackListItem | null
+  isOpen: boolean;
+  onClose: () => void;
+  kisiDetay: BlackListItem | null;
 }
 
-export function KaraListeDetayModal({ isOpen, onClose, kisiDetay }: KaraListeDetayModalProps) {
-  if (!kisiDetay) return null
+export function KaraListeDetayModal({
+  isOpen,
+  onClose,
+  kisiDetay,
+}: KaraListeDetayModalProps) {
+  if (!kisiDetay) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -27,11 +31,13 @@ export function KaraListeDetayModal({ isOpen, onClose, kisiDetay }: KaraListeDet
             {kisiDetay.Adi} {kisiDetay.Soy} kişisine ait detaylı bilgiler
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="grid grid-cols-2 gap-4 py-4">
           <div className="space-y-4">
             <div className="space-y-2">
-              <h4 className="text-sm font-medium text-muted-foreground">Kişisel Bilgiler</h4>
+              <h4 className="text-sm font-medium text-muted-foreground">
+                Kişisel Bilgiler
+              </h4>
               <div className="grid grid-cols-1 gap-2">
                 <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground">Ad</span>
@@ -42,15 +48,23 @@ export function KaraListeDetayModal({ isOpen, onClose, kisiDetay }: KaraListeDet
                   <span className="font-medium">{kisiDetay.Soy || "-"}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">TC Kimlik No</span>
+                  <span className="text-xs text-muted-foreground">
+                    TC Kimlik No
+                  </span>
                   <span className="font-medium">{kisiDetay.Tcno || "-"}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Kimlik No</span>
-                  <span className="font-medium">{kisiDetay.Kimlik_no || "-"}</span>
+                  <span className="text-xs text-muted-foreground">
+                    Kimlik No
+                  </span>
+                  <span className="font-medium">
+                    {kisiDetay.Kimlik_no || "-"}
+                  </span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Doğum Tarihi</span>
+                  <span className="text-xs text-muted-foreground">
+                    Doğum Tarihi
+                  </span>
                   <span className="font-medium bg-yellow-50 px-2 py-1 rounded">
                     {kisiDetay.Dogum_tarihi || "Belirtilmemiş"}
                   </span>
@@ -58,28 +72,44 @@ export function KaraListeDetayModal({ isOpen, onClose, kisiDetay }: KaraListeDet
               </div>
             </div>
           </div>
-          
+
           <div className="space-y-4">
             <div className="space-y-2">
-              <h4 className="text-sm font-medium text-muted-foreground">Sistem Bilgileri</h4>
+              <h4 className="text-sm font-medium text-muted-foreground">
+                Sistem Bilgileri
+              </h4>
               <div className="grid grid-cols-1 gap-2">
                 <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Kullanıcı</span>
-                  <span className="font-medium">{kisiDetay.Kulanici || "-"}</span>
+                  <span className="text-xs text-muted-foreground">
+                    Kullanıcı
+                  </span>
+                  <span className="font-medium">
+                    {kisiDetay.Kulanici || "-"}
+                  </span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Sistem Tarihi</span>
-                  <span className="font-medium">{kisiDetay.Sistem_tarihi || "-"}</span>
+                  <span className="text-xs text-muted-foreground">
+                    Sistem Tarihi
+                  </span>
+                  <span className="font-medium">
+                    {kisiDetay.Sistem_tarihi || "-"}
+                  </span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Sistem Grubu</span>
+                  <span className="text-xs text-muted-foreground">
+                    Sistem Grubu
+                  </span>
                   <span className="font-medium bg-yellow-50 px-2 py-1 rounded">
                     {kisiDetay.Sistem_grubu || "Belirtilmemiş"}
                   </span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Otel Kodu</span>
-                  <span className="font-medium">{kisiDetay.Otel_kodu || "-"}</span>
+                  <span className="text-xs text-muted-foreground">
+                    Otel Kodu
+                  </span>
+                  <span className="font-medium">
+                    {kisiDetay.Otel_kodu || "-"}
+                  </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground">Acenta</span>
@@ -89,9 +119,11 @@ export function KaraListeDetayModal({ isOpen, onClose, kisiDetay }: KaraListeDet
             </div>
           </div>
         </div>
-        
+
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground">Ülke Bilgileri</h4>
+          <h4 className="text-sm font-medium text-muted-foreground">
+            Ülke Bilgileri
+          </h4>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground">Ülke XML</span>
@@ -99,22 +131,30 @@ export function KaraListeDetayModal({ isOpen, onClose, kisiDetay }: KaraListeDet
             </div>
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground">XML Kodu</span>
-              <span className="font-medium">{kisiDetay["Xml Kodu"] || "-"}</span>
+              <span className="font-medium">
+                {kisiDetay["Xml Kodu"] || "-"}
+              </span>
             </div>
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground">Ülke Adı</span>
-              <span className="font-medium">{kisiDetay["ULke Adı"] || "-"}</span>
+              <span className="font-medium">
+                {kisiDetay["ULke Adı"] || "-"}
+              </span>
             </div>
           </div>
         </div>
-        
+
         <div className="space-y-2 mt-4">
-          <h4 className="text-sm font-medium text-muted-foreground">Açıklama</h4>
+          <h4 className="text-sm font-medium text-muted-foreground">
+            Açıklama
+          </h4>
           <div className="rounded-md bg-muted p-4">
-            <p className="text-sm">{kisiDetay.Aciklama || "Açıklama bulunmuyor."}</p>
+            <p className="text-sm">
+              {kisiDetay.Aciklama || "Açıklama bulunmuyor."}
+            </p>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  )
-} 
+  );
+}
