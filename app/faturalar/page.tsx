@@ -1,18 +1,25 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sidebar } from "@/components/ui/sidebar";
-import { FileText, Calendar, UserPlus, FilePlus } from "lucide-react";
+import { FileText, Calendar, FilePlus } from "lucide-react";
 import { invoicesService } from "@/services/invoices";
 import type { InvoicesRequest } from "@/types";
-import { FaturaTablosu } from "@/components/faturalar/fatura-tablosu";
-import { FaturaIstatistikleri } from "@/components/faturalar/fatura-istatistikleri";
+import { LoadingSpinner } from "@/components/ui/table-skeleton";
+
+// Lazy load edilen komponentler
+const FaturaTablosu = lazy(() => import("@/components/faturalar/fatura-tablosu").then(module => ({ default: module.FaturaTablosu })));
+const FaturaIstatistikleri = lazy(() => import("@/components/faturalar/fatura-istatistikleri").then(module => ({ default: module.FaturaIstatistikleri })));
+
+// Loading komponenti
+const TableLoading = () => (
+  <LoadingSpinner text="Yükleniyor..." />
+);
 
 export default function FaturalarPage() {
   const [startDate, setStartDate] = useState("");
@@ -51,9 +58,7 @@ export default function FaturalarPage() {
   };
 
   return (
-    <div className="flex h-screen">
-      <Sidebar />
-      <div className="flex-1 ml-64 p-6">
+    <div className="p-6">
         <div className="space-y-6">
           <div className="flex justify-between items-center bg-slate-100 p-4 rounded-md">
             <div className="flex items-center gap-4">
@@ -124,14 +129,17 @@ export default function FaturalarPage() {
             </TabsList>
 
             <TabsContent value="table" className="space-y-4">
-              <FaturaTablosu invoices={invoices} loading={isLoading} />
+              <Suspense fallback={<TableLoading />}>
+                <FaturaTablosu invoices={invoices} loading={isLoading} />
+              </Suspense>
             </TabsContent>
 
             <TabsContent value="statistics" className="space-y-4">
-              <FaturaIstatistikleri invoices={invoices} loading={isLoading} />
+              <Suspense fallback={<TableLoading />}>
+                <FaturaIstatistikleri invoices={invoices} loading={isLoading} />
+              </Suspense>
             </TabsContent>
           </Tabs>
-        </div>
       </div>
     </div>
   );

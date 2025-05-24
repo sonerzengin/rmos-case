@@ -12,7 +12,7 @@ interface AuthState {
   initialize: () => void
 }
 
-export const useAuthStore = create<AuthState>((set, get) => {
+export const useAuthStore = create<AuthState>((set) => {
   // Otomatik başlatma - store oluşturulduğunda bir kez çalışır
   const isAuth = authService.isAuthenticated()
 

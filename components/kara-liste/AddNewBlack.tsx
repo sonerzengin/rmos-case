@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/form";
 import { addBlackListSchema, type AddBlackListFormValues } from "@/lib/schemas";
 import { blackListService } from "@/services/blackListServices";
-import { useToast } from "@/hooks/use-toast";
 import { toastService } from "@/services/toastService";
 
 interface AddNewBlackProps {
@@ -32,7 +31,6 @@ interface AddNewBlackProps {
 }
 
 export function AddNewBlack({ isOpen, onClose }: AddNewBlackProps) {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const form = useForm<AddBlackListFormValues>({

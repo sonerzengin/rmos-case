@@ -4,7 +4,6 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/lib/store"
 import { Button } from "@/components/ui/button"
-import { Sidebar } from "@/components/ui/sidebar"
 import {
   Card,
   CardContent,
@@ -36,9 +35,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex h-screen">
-      <Sidebar />
-      <div className="flex-1 ml-64 p-6">
+    <div className="p-6">
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
@@ -49,7 +46,7 @@ export default function Home() {
               <CardHeader>
                 <CardTitle>Hoş Geldiniz</CardTitle>
                 <CardDescription>
-                  Dashboard'a başarıyla giriş yaptınız
+                  Dashboard&apos;a başarıyla giriş yaptınız
                 </CardDescription>
               </CardHeader>
               
@@ -100,7 +97,6 @@ export default function Home() {
               </CardContent>
             </Card>
           </div>
-        </div>
       </div>
     </div>
   )

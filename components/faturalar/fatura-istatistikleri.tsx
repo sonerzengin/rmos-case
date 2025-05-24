@@ -22,6 +22,7 @@ import {
   Legend
 } from 'recharts'
 import type { InvoiceData } from "@/types"
+import { LoadingSpinner } from "@/components/ui/table-skeleton"
 
 interface FaturaIstatistikleriProps {
   invoices: InvoiceData[]
@@ -75,8 +76,6 @@ export function FaturaIstatistikleri({ invoices, loading }: FaturaIstatistikleri
     ]
   }, [invoices, selectedDate])
 
-  const COLORS = ['#8B5CF6', '#E5E7EB', '#3B82F6', '#10B981', '#F59E0B']
-
   if (loading) {
     return (
       <Card>
@@ -85,9 +84,7 @@ export function FaturaIstatistikleri({ invoices, loading }: FaturaIstatistikleri
           <CardDescription>Veriler yükleniyor...</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          </div>
+          <LoadingSpinner />
         </CardContent>
       </Card>
     )

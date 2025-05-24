@@ -1,7 +1,9 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
+import { useDebounce } from "@/hooks/use-debounce"
+import { usePerformanceMonitor, useLargeListPerformance } from "@/hooks/use-performance"
 import {
   Card,
   CardContent,
@@ -30,6 +32,7 @@ import {
 } from "lucide-react"
 import type { InvoiceData } from "@/types"
 import { format } from "date-fns"
+import { TableSkeleton } from "@/components/ui/table-skeleton"
 
 interface FaturaTablonuProps {
   invoices: InvoiceData[]
@@ -40,25 +43,42 @@ export function FaturaTablosu({ invoices, loading }: FaturaTablonuProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
+  
+  // Performans izleme
+  usePerformanceMonitor({ 
+    componentName: 'FaturaTablosu', 
+    dataSize: invoices.length 
+  })
+  useLargeListPerformance('Fatura Listesi', invoices.length)
+  
+  // Debounced search term - 300ms gecikme ile
+  const debouncedSearchTerm = useDebounce(searchTerm, 300)
 
-  // Arama filtreleme
-  const filteredInvoices = invoices.filter(invoice => {
-    if (!searchTerm) return true
+  // Arama filtreleme - memoized
+  const filteredInvoices = useMemo(() => {
+    if (!debouncedSearchTerm) return invoices
     
-    const searchLower = searchTerm.toLowerCase()
-    return (
+    const searchLower = debouncedSearchTerm.toLowerCase()
+    return invoices.filter(invoice => 
       invoice.Tarih.toLowerCase().includes(searchLower) ||
       invoice["Gun Tarih"].toLowerCase().includes(searchLower) ||
       invoice.Oda.toString().includes(searchLower) ||
       invoice.Yetişkin.toString().includes(searchLower)
     )
-  })
+  }, [invoices, debouncedSearchTerm])
 
-  // Sayfalama için veri dilimleme
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredInvoices.slice(indexOfFirstItem, indexOfLastItem)
-  const totalPages = Math.ceil(filteredInvoices.length / itemsPerPage)
+  // Sayfalama için veri dilimleme - memoized
+  const { currentItems, totalPages } = useMemo(() => {
+    const indexOfLastItem = currentPage * itemsPerPage
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage
+    const items = filteredInvoices.slice(indexOfFirstItem, indexOfLastItem)
+    const pages = Math.ceil(filteredInvoices.length / itemsPerPage)
+    
+    return {
+      currentItems: items,
+      totalPages: pages
+    }
+  }, [filteredInvoices, currentPage, itemsPerPage])
 
   // Sayfa değiştiğinde ilk sayfaya dön
   useEffect(() => {
@@ -109,10 +129,15 @@ export function FaturaTablosu({ invoices, loading }: FaturaTablonuProps) {
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center py-8">
-            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
-            <span className="ml-2">Veriler yükleniyor...</span>
-          </div>
+          <TableSkeleton 
+            rows={10} 
+            columns={12}
+            headerLabels={[
+              "Tarih", "Mevcut", "Oda", "Yetişkin", "Çocuk", 
+              "Toplam Kişi", "Pax", "Yüzde%", "Package Tutar", 
+              "Gün Tarih", "Pax(Y/C2)", "İşlemler"
+            ]}
+          />
         ) : (
           <>
             <div className="border-t overflow-x-auto">

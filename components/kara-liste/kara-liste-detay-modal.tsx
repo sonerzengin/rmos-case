@@ -1,6 +1,8 @@
 "use client";
 
 import type { BlackListItem } from "@/types";
+import { format } from "date-fns";
+import { tr } from "date-fns/locale";
 import {
   Dialog,
   DialogContent,
@@ -65,8 +67,10 @@ export function KaraListeDetayModal({
                   <span className="text-xs text-muted-foreground">
                     Doğum Tarihi
                   </span>
-                  <span className="font-medium bg-yellow-50 px-2 py-1 rounded">
-                    {kisiDetay.Dogum_tarihi || "Belirtilmemiş"}
+                  <span className="font-medium rounded">
+                    {kisiDetay.Dogum_tarihi 
+                      ? format(new Date(kisiDetay.Dogum_tarihi), 'dd.MM.yyyy', { locale: tr })
+                      : "Belirtilmemiş"}
                   </span>
                 </div>
               </div>
@@ -92,14 +96,16 @@ export function KaraListeDetayModal({
                     Sistem Tarihi
                   </span>
                   <span className="font-medium">
-                    {kisiDetay.Sistem_tarihi || "-"}
+                    {kisiDetay.Sistem_tarihi 
+                      ? format(new Date(kisiDetay.Sistem_tarihi), 'dd.MM.yyyy HH:mm', { locale: tr })
+                      : "-"}
                   </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground">
                     Sistem Grubu
                   </span>
-                  <span className="font-medium bg-yellow-50 px-2 py-1 rounded">
+                  <span className="font-medium ">
                     {kisiDetay.Sistem_grubu || "Belirtilmemiş"}
                   </span>
                 </div>

@@ -40,7 +40,7 @@ export function LoginForm() {
 
   const loginMutation = useMutation({
     mutationFn: (values: LoginFormValues) => login(values),
-    onError: (error) => {
+    onError: () => {
       toast({
         variant: "destructive",
         title: "Hata",
@@ -66,8 +66,8 @@ export function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center w-[90%]">
-      <Card className="w-full shadow-none border-none bg-transparent">
+    <div className="flex min-h-screen items-center justify-center max-w-2xl">
+      <Card className="w-full ">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
             Giriş Yap

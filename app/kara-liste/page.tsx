@@ -22,17 +22,14 @@ import {
   Search,
   UserPlus,
   Trash,
-  Loader2,
   ChevronLeft,
   ChevronRight,
   Eye,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Sidebar } from "@/components/ui/sidebar";
 import { blackListService } from "@/services/blackListServices";
 import type { BlackListItem } from "@/types";
-import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Select,
   SelectContent,
@@ -44,9 +41,9 @@ import { KaraListeDetayModal } from "@/components/kara-liste/kara-liste-detay-mo
 import { AddNewBlack } from "@/components/kara-liste/AddNewBlack";
 import { toastService } from "@/services/toastService";
 import { format } from "date-fns";
+import { TableSkeleton } from "@/components/ui/table-skeleton";
 
 export default function KaraListePage() {
-  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -63,23 +60,34 @@ export default function KaraListePage() {
     queryFn: () => blackListService.getBlackList(),
   });
 
-  // Filtrelenmiş verileri hesapla
-  const filteredData = karaListe.filter((item: BlackListItem) => {
+  // Filtrelenmiş verileri hesapla - memoized
+  const filteredData = useMemo(() => {
+    if (!searchTerm) return karaListe
+    
     const searchLower = searchTerm.toLowerCase();
-    return (
-      (item.Adi && item.Adi.toLowerCase().includes(searchLower)) ||
-      (item.Soy && item.Soy.toLowerCase().includes(searchLower)) ||
-      (item.Tcno && item.Tcno.toLowerCase().includes(searchLower)) ||
-      (item.Kimlik_no && item.Kimlik_no.toLowerCase().includes(searchLower)) ||
-      (item.Aciklama && item.Aciklama.toLowerCase().includes(searchLower))
-    );
-  });
+    return karaListe.filter((item: BlackListItem) => {
+      return (
+        (item.Adi && item.Adi.toLowerCase().includes(searchLower)) ||
+        (item.Soy && item.Soy.toLowerCase().includes(searchLower)) ||
+        (item.Tcno && item.Tcno.toLowerCase().includes(searchLower)) ||
+        (item.Kimlik_no && item.Kimlik_no.toLowerCase().includes(searchLower)) ||
+        (item.Aciklama && item.Aciklama.toLowerCase().includes(searchLower))
+      );
+    });
+  }, [karaListe, searchTerm]);
 
-  // Sayfalama için veri dilimleme
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  // Sayfalama için veri dilimleme - memoized
+  const { currentItems, totalPages } = useMemo(() => {
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const items = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+    const pages = Math.ceil(filteredData.length / itemsPerPage);
+    
+    return {
+      currentItems: items,
+      totalPages: pages
+    };
+  }, [filteredData, currentPage, itemsPerPage]);
 
   // Sayfa değiştiğinde ilk sayfaya dön
   useEffect(() => {
@@ -113,9 +121,7 @@ export default function KaraListePage() {
   };
 
   return (
-    <div className="flex h-screen">
-      <Sidebar />
-      <div className="flex-1 ml-64 p-6">
+    <div className="p-6">
         <div className="space-y-6">
           <div className="flex justify-between items-center bg-slate-100 p-4 rounded-md">
             <div className="flex items-center gap-4">
@@ -154,10 +160,15 @@ export default function KaraListePage() {
               </div>
 
               {isLoading ? (
-                <div className="flex justify-center items-center py-8">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  <span className="ml-2">Veriler yükleniyor...</span>
-                </div>
+                <TableSkeleton 
+                  rows={10} 
+                  columns={9}
+                  headerLabels={[
+                    "Ad", "Soyad", "TC Kimlik", "Kimlik No", 
+                    "Doğum Tarihi", "Sistem Grubu", "Kullanıcı", 
+                    "Ülke Kodu", "İşlemler"
+                  ]}
+                />
               ) : isError ? (
                 <div className="flex justify-center items-center py-8 text-destructive">
                   Veriler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
@@ -298,7 +309,6 @@ export default function KaraListePage() {
             isOpen={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
           />
-        </div>
       </div>
     </div>
   );

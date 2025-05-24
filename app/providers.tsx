@@ -14,7 +14,20 @@ export function Providers({ children }: ProvidersProps) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60 * 1000, // 1 dakika
+            staleTime: 5 * 60 * 1000, // 5 dakika (60 saniyeden arttırıldı)
+            gcTime: 10 * 60 * 1000, // 10 dakika garbage collection süresi
+            retry: (failureCount, error) => {
+              // Ağ hatalarında 3 kez dene, diğer hatalar için 1 kez
+              if ((error as any)?.message?.includes('Network Error')) {
+                return failureCount < 3
+              }
+              return failureCount < 1
+            },
+            retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+            refetchOnWindowFocus: false, // Pencere odağında otomatik yenilemeyi kapat
+            refetchOnMount: false, // Mount sırasında cache varsa yenilememe
+          },
+          mutations: {
             retry: 1,
           },
         },
