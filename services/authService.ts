@@ -1,19 +1,10 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 import { toastService } from './toastService'
+import type { LoginCredentials, User } from '@/types'
 
-const TOKEN_COOKIE_NAME = 'auth_token'
+const TOKEN_COOKIE_NAME = 'auth-token'
 const COOKIE_EXPIRES_DAYS = 7
-
-export interface LoginCredentials {
-  username: string
-  password: string
-}
-
-export interface User {
-  id: string
-  username: string
-}
 
 class AuthService {
   // Token'ı cookie'den al

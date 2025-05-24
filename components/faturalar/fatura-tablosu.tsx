@@ -28,7 +28,7 @@ import {
   ChevronRight,
   Eye 
 } from "lucide-react"
-import { InvoiceData } from "@/services/invoices"
+import type { InvoiceData } from "@/types"
 import { format } from "date-fns"
 
 interface FaturaTablonuProps {

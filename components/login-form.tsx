@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -26,6 +27,7 @@ import { useToast } from "@/hooks/use-toast"
 
 export function LoginForm() {
   const { toast } = useToast()
+  const router = useRouter()
   const login = useAuthStore(state => state.login)
 
   const form = useForm<LoginFormValues>({
@@ -46,7 +48,10 @@ export function LoginForm() {
       })
     },
     onSuccess: (success) => {
-      if (!success) {
+      if (success) {
+        // Login başarılı - ana sayfaya yönlendir
+        router.push("/")
+      } else {
         toast({
           variant: "destructive", 
           title: "Giriş başarısız",
@@ -61,8 +66,8 @@ export function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md">
+    <div className="flex min-h-screen items-center justify-center w-[90%]">
+      <Card className="w-full shadow-none border-none bg-transparent">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
             Giriş Yap

@@ -1,6 +1,6 @@
 "use client";
 
-import { BlackListItem } from "@/services/blackListServices";
+import type { BlackListItem } from "@/types";
 import {
   Dialog,
   DialogContent,

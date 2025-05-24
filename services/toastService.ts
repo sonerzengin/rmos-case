@@ -1,14 +1,5 @@
 import { toast } from "@/hooks/use-toast"
-
-type ToastVariant = "default" | "destructive" | "success" | "warning"
-type ToastType = "success" | "error" | "warning" | "info"
-
-interface ToastOptions {
-  title?: string
-  description: string
-  variant?: ToastVariant
-  duration?: number
-}
+import type { ToastVariant, ToastType, ToastOptions } from '@/types'
 
 class ToastService {
   showToast({ title, description, variant = "default", duration = 2000 }: ToastOptions) {
