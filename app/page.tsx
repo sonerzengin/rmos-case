@@ -1,8 +1,5 @@
 "use client"
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { useAuthStore } from "@/lib/store"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -13,26 +10,6 @@ import {
 } from "@/components/ui/card"
 
 export default function Home() {
-  const router = useRouter()
-  const isAuthenticated = useAuthStore(state => state.isAuthenticated)
-  // Authentication kontrolü
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/login")
-    }
-  }, [isAuthenticated, router])
-
-  // Eğer authenticated değilse loading göster
-  if (!isAuthenticated) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2 text-gray-600">Yönlendiriliyor...</p>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="p-6">

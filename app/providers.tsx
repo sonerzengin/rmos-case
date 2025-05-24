@@ -18,7 +18,7 @@ export function Providers({ children }: ProvidersProps) {
             gcTime: 10 * 60 * 1000, // 10 dakika garbage collection süresi
             retry: (failureCount, error) => {
               // Ağ hatalarında 3 kez dene, diğer hatalar için 1 kez
-              if ((error as any)?.message?.includes('Network Error')) {
+              if ((error)?.message?.includes('Network Error')) {
                 return failureCount < 3
               }
               return failureCount < 1
